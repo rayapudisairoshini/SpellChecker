@@ -58,85 +58,76 @@ bool isMisspelled(const string &word, const HashTable<string> &hashTable)
     return !hashTable.search(word);
 }
 
-// Function to spell check a paragraph using the hash table
-void spellCheckParagraph(const string &paragraph, const HashTable<string> &hashTable, vector<string> &misspelledWords)
+// Function to spell check a paragraph from a file
+void spellCheckFromFile(const string &wordsFile, const string &paraFile, const string &misspelledFile)
 {
-    string word;
-    string currentWord;
-    for (char c : paragraph)
-    {
-        if (isalpha(c))
-        {
-            currentWord += tolower(c);
-        }
-        else
-        {
-            if (!currentWord.empty())
-            {
-                if (isMisspelled(currentWord, hashTable))
-                {
-                    misspelledWords.push_back(currentWord);
-                }
-                currentWord.clear();
-            }
-        }
-    }
-    if (!currentWord.empty())
-    {
-        if (isMisspelled(currentWord, hashTable))
-        {
-            misspelledWords.push_back(currentWord);
-        }
-    }
-}
+    ifstream wordsFileStream(wordsFile);
+    ifstream paraFileStream(paraFile);
+    ofstream misspelledFileStream(misspelledFile);
 
-// Function to implement Linear Probing
-int linearProbe(string table[], int i, int n);
-
-// Function to implement quadratic probing
-int quadProbe(string table[], int i, int n);
-
-int main()
-{
-    ifstream wordsFile("words.txt");
-    ifstream paraFile("para.txt");
-    ofstream misspelledFile("misspelled_words.txt");
-
-    if (!wordsFile || !paraFile)
+    if (!wordsFileStream || !paraFileStream)
     {
         cerr << "Error: Unable to open file\n";
-        return 1;
+        return;
     }
 
     unordered_set<string> dictionary;
     string word;
-    while (wordsFile >> word)
+    while (wordsFileStream >> word)
     {
         dictionary.insert(word);
     }
 
     HashTable<string> hashTable(53); // Initial table size is 53
 
-    while (wordsFile >> word)
+    while (wordsFileStream >> word)
     {
         hashTable.insert(word);
     }
 
-    string paragraph((istreambuf_iterator<char>(paraFile)), istreambuf_iterator<char>());
+    string paragraph((istreambuf_iterator<char>(paraFileStream)), istreambuf_iterator<char>());
 
     vector<string> misspelledWords;
     spellCheckParagraph(paragraph, hashTable, misspelledWords);
 
     for (const string &misspelledWord : misspelledWords)
     {
-        misspelledFile << misspelledWord << endl;
+        misspelledFileStream << misspelledWord << endl;
     }
 
-    misspelledFile.close();
-    paraFile.close();
-    wordsFile.close();
+    misspelledFileStream.close();
+    paraFileStream.close();
+    wordsFileStream.close();
 
     cout << "Misspelled words count: " << misspelledWords.size() << endl;
+}
+
+// Function to spell check a paragraph entered by the user
+void spellCheckByUserInput()
+{
+    // Your existing code for user-input spell checking here
+    // Include the necessary functions and logic from the second code snippet
+    // Adjust file handling or output as needed for user input
+}
+
+int main()
+{
+    int choice;
+    cout << "Select spell-checking method:\n1. Spell check from file\n2. Spell check by user input\n";
+    cin >> choice;
+
+    switch (choice)
+    {
+    case 1:
+        spellCheckFromFile("words.txt", "para.txt", "misspelled_words.txt");
+        break;
+    case 2:
+        spellCheckByUserInput();
+        break;
+    default:
+        cout << "Invalid choice.\n";
+        break;
+    }
 
     return 0;
 }
