@@ -4,9 +4,7 @@
 #include <unordered_set>
 #include <vector>
 #include <algorithm>
-
 using namespace std;
-
 // Hash Function for strings
 struct StringHash
 {
@@ -20,7 +18,6 @@ struct StringHash
         return hash;
     }
 };
-
 // Hash Table class
 template <typename T>
 class HashTable
@@ -28,19 +25,16 @@ class HashTable
 private:
     vector<vector<T>> table;
     size_t size;
-
 public:
     HashTable(size_t size) : size(size)
     {
         table.resize(size);
     }
-
     void insert(const T &item)
     {
         size_t index = hash<T>{}(item) % size;
         table[index].push_back(item);
     }
-
     bool search(const T &item)
     {
         size_t index = hash<T>{}(item) % size;
